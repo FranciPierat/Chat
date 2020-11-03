@@ -104,7 +104,7 @@ public class ChatServer{
     
     public void elencoComandi(){
         statusServer("Mostrando a " + nomeClient + " i comandi della chat...");
-        output.println(String.format("I comandi da inserire nella chat sono: " + '\n' + "/logout per uscire dalla chat " + '\n' +
+        output.println(String.format("I comandi da inserire nella chat sono: " + '\n' + "/t <NomeUtente> <messaggio> serve per mandare ad un singolo utente un messaggio" + '\n' + "/logout per uscire dalla chat " + '\n' +
         "/list per vedere gli utenti connessi alla chat " + '\n' + "/comandi per vedere i comandi " + '\n' + "Per mandare un messaggio a tutti gli utenti connessi basta solo scrivere il messaggio ed inviarlo" + '\n'));
     }
     

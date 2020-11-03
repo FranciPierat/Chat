@@ -52,6 +52,9 @@ public class GestioneClient implements Runnable {
             }
 
             switch (message.split(" ")[0]) {
+                case "/t":
+                    whisperMessage(message);
+                    break;
                 case "/logout":
                     closeAll();
                     return;
@@ -81,6 +84,23 @@ public class GestioneClient implements Runnable {
             client.close();
         } catch (SocketException e) {
             System.out.println(e.getMessage());
+        }
+    }
+    
+    private void whisperMessage(String message) {
+        String recipient = message.split(" ")[1];
+
+        for (GestioneClient client : chatServer.getClientList()) {
+            if (client.getName().equals(recipient)) {
+                String[] messageArray = message.split(" ");
+                String whisperedMessage = "";
+                int messageIndex = 2;
+                for (int i = messageIndex; i < messageArray.length; i++) {
+                    whisperedMessage += messageArray[i] + " ";
+                }
+                client.sendMessage(name + " ti ha scritto: " + whisperedMessage);
+                sendMessage("Hai scritto a " + client.getName() + ": " + (message = whisperedMessage));
+            }
         }
     }
 
