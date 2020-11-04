@@ -20,7 +20,7 @@ public class ChatServer{
     public List<GestioneClient> clients;
     private ServerSocket serverSocket;
     private String nomeClient;
-    private PrintStream output = null;
+    public PrintStream output = null;
     
     public void start(){
 
@@ -43,15 +43,25 @@ public class ChatServer{
                     output.println(String.format("Inserisci il tuo nome:")); //avviene il salvataggio del nome
                     statusServer("Aspettando che il client dia il suo nome...");
                     nomeClient = input.readLine().trim();
+                    for (int i = 0; i < clients.size(); i++) {                                      //controllo sul nome del client
+                        GestioneClient client = clients.get(i);
+                        if (client.getName().equals(nomeClient)) {
+                            statusServer("L'utente ha inserito un nome già esistente...");
+                            output.println(String.format("Il nome inserito esiste già." + '\n' + "Inserire un altro nome:"));
+                            statusServer("Aspettando che il client dia il suo nome...");
+                            nomeClient = input.readLine().trim();
+                            i = -1;
+                        }
+                    }                                               
+                    for (GestioneClient client : clients) {                                     //per dire ai client chi si è connesso
+                        client.sendMessage("L'utente " + nomeClient + " è entrato nella chat");
+                    }
                     System.out.println(nomeClient + " si è connesso alla chat.");
                     output.println(String.format("Benvenuto nella chat" + '\n'));
                     elencoComandi();
                     GestioneClient client = new GestioneClient(nomeClient, clientSocket, this);
                     threadPool.submit(client);
                     clients.add(client);
-                    if(clients.size() > 1){
-                        broadcast(client.getName() + " è entrato nella chat.");
-                    }
                 }catch (IOException e) {
                     System.out.println(e.getMessage());
                 }
@@ -83,9 +93,13 @@ public class ChatServer{
 
     public void removeClient(GestioneClient client) {
         synchronized (clients) {
+            String nome = client.getName();
             statusServer("Rimuovendo " + client.getName() + " dalla chat...");
             statusServer("Rimosso " + client.getName() + " dalla chat...");
             clients.remove(client);
+            for (GestioneClient c : clients) {                                     //per dire ai client chi si è connesso
+                c.sendMessage("L'utente " + nome + " è uscito dalla chat");
+            }
         }
     }
 
@@ -111,5 +125,4 @@ public class ChatServer{
     public void statusServer(String m){
         System.out.println(m);
     }
-
 }

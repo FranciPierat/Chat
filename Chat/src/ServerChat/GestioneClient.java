@@ -77,9 +77,6 @@ public class GestioneClient implements Runnable {
 
     private void closeAll() throws IOException {
         try {
-            if(chatServer.clients.size() > 1){
-                chatServer.broadcast(name + " è uscito dalla chat.");
-            }
             chatServer.removeClient(this);
             client.close();
         } catch (SocketException e) {
