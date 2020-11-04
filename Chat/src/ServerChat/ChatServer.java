@@ -58,7 +58,7 @@ public class ChatServer{
                     }
                     System.out.println(nomeClient + " si è connesso alla chat.");
                     output.println(String.format("Benvenuto nella chat" + '\n'));
-                    elencoComandi();
+                    elencoComandi(nomeClient);
                     GestioneClient client = new GestioneClient(nomeClient, clientSocket, this);
                     threadPool.submit(client);
                     clients.add(client);
@@ -73,9 +73,9 @@ public class ChatServer{
 
     }
 
-    public void broadcast(String message) {
+    public void broadcast(String message, String nome) {
         synchronized (clients) {
-            statusServer("Ricevuto un messaggio da " + nomeClient + "...");
+            statusServer("Ricevuto un messaggio da " + nome + "...");
             for (GestioneClient client : clients) {
                 if(clients.size() == 1){
                     output.println(String.format("C'è un solo client"));
@@ -103,8 +103,8 @@ public class ChatServer{
         }
     }
 
-    public StringBuilder activeClients() {
-        statusServer("Mostrando all'utente " + nomeClient + " gli utenti connessi...");
+    public StringBuilder activeClients(String nome) {
+        statusServer("Mostrando all'utente " + nome + " gli utenti connessi...");
         StringBuilder list = new StringBuilder("Utenti loggati: \n");
         for (GestioneClient client : clients) {
             list.append(client.getName()).append("\n");
@@ -116,8 +116,8 @@ public class ChatServer{
         return clients;
     }
     
-    public void elencoComandi(){
-        statusServer("Mostrando a " + nomeClient + " i comandi della chat...");
+    public void elencoComandi(String nome){
+        statusServer("Mostrando a " + nome + " i comandi della chat...");
         output.println(String.format("I comandi da inserire nella chat sono: " + '\n' + "/t <NomeUtente> <messaggio> serve per mandare ad un singolo utente un messaggio" + '\n' + "/logout per uscire dalla chat " + '\n' +
         "/list per vedere gli utenti connessi alla chat " + '\n' + "/comandi per vedere i comandi " + '\n' + "Per mandare un messaggio a tutti gli utenti connessi basta solo scrivere il messaggio ed inviarlo" + '\n'));
     }

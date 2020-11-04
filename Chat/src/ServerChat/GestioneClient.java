@@ -59,13 +59,13 @@ public class GestioneClient implements Runnable {
                     closeAll();
                     return;
                 case "/list":
-                    sendMessage(chatServer.activeClients().toString());
+                    sendMessage(chatServer.activeClients(name).toString());
                     break;
                 case "/comandi":
-                    chatServer.elencoComandi();
+                    chatServer.elencoComandi(name);
                     break;
                 default:
-                    chatServer.broadcast(name + ">> " + message);
+                    chatServer.broadcast(name + ">> " + message, name);
                     break;
             }
         }
@@ -86,17 +86,24 @@ public class GestioneClient implements Runnable {
     
     private void whisperMessage(String message) {
         String recipient = message.split(" ")[1];
-
-        for (GestioneClient client : chatServer.getClientList()) {
+        chatServer.statusServer("Cercando l'utente " + recipient + " per l'utente " + getName() + "...");
+        for (int i = 0; i < chatServer.getClientList().size(); i++) {
+            GestioneClient client = chatServer.getClientList().get(i);
             if (client.getName().equals(recipient)) {
+                chatServer.statusServer("Utente trovato..." + '\n' + "Invio del messaggio all'utente " + client.getName() + "...");
                 String[] messageArray = message.split(" ");
                 String whisperedMessage = "";
                 int messageIndex = 2;
-                for (int i = messageIndex; i < messageArray.length; i++) {
-                    whisperedMessage += messageArray[i] + " ";
+                for (int x = messageIndex; x < messageArray.length; x++) {
+                    whisperedMessage += messageArray[x] + " ";
                 }
                 client.sendMessage(name + " ti ha scritto: " + whisperedMessage);
                 sendMessage("Hai scritto a " + client.getName() + ": " + (message = whisperedMessage));
+                break;
+            }
+            if(i == (chatServer.getClientList().size() - 1)){
+                chatServer.statusServer("Utente non trovato...");
+                sendMessage("L'utente da lei cercato non esiste");
             }
         }
     }
